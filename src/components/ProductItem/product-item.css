@@ -1,0 +1,13 @@
+.product-item-cart {
+    margin: auto;
+}
+
+.product-item-cart-list {
+    max-width: 290px;
+    margin: auto;
+}
+
+.product-item-cart-image {
+    max-width: 500px;
+    margin: auto;
+}
