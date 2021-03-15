@@ -14,8 +14,14 @@ function App() {
         db.collection('product')
             .orderBy('name', 'asc')
             .onSnapshot((snapshot) => {
-                setData(snapshot.docs.map((doc) => doc.data()))
+                setData(snapshot.docs.map((doc) => {
+                    return {
+                        firebaseID: doc.id,
+                        ...doc.data()
+                    }
+                }))
             }, (error => console.log(error)))
+
     }, [])
 
     const sortByName = async () => {
@@ -23,7 +29,12 @@ function App() {
             .collection('product')
             .orderBy('name', 'asc')
             .onSnapshot((snapshot) => {
-                setData(snapshot.docs.map((doc) => doc.data())
+                setData(snapshot.docs.map((doc) => {
+                        return {
+                            firebaseID: doc.id,
+                            ...doc.data()
+                        }
+                    })
                 )
             }, (error) => {
                 console.log("Error getting cached document:", error);
@@ -34,7 +45,12 @@ function App() {
             .collection('product')
             .orderBy('count', 'desc')
             .onSnapshot((snapshot) => {
-                setData(snapshot.docs.map((doc) => doc.data()))
+                setData(snapshot.docs.map((doc) => {
+                    return {
+                        firebaseID: doc.id,
+                        ...doc.data()
+                    }
+                }))
             }, (error => console.log(error)))
     }
 

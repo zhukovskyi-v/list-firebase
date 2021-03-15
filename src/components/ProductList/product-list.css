@@ -2,5 +2,12 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+}
 
+.product-list-card {
+    max-width: 25%;
+}
+
+.product-list-image img{
+    max-width: 100%;
 }

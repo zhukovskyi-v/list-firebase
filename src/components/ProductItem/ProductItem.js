@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react'
-import {useRouteMatch} from 'react-router';
+import React, {useEffect, useState} from 'react';
+import {useRouteMatch,Redirect} from 'react-router-dom';
 import {Button, Card, Col, Form, ListGroup, Spinner} from 'react-bootstrap';
 import {db} from '../../firebase';
 import firebase from "firebase";
 import './product-item.css'
 import {ModalForm} from "../ModalForm/ModalForm";
+
 
 export const ProductItem = () => {
     const match = useRouteMatch();
@@ -12,6 +13,7 @@ export const ProductItem = () => {
     const [comment, setComment] = useState({})
     const [validated, setValidated] = useState(false);
     const [itemFirebaseID, setItemFirebaseID] = useState('')
+    const [isRedirect, setIsRedirect] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -52,8 +54,21 @@ export const ProductItem = () => {
         }
         getData();
     }, [match, itemID])
-
-
+    const onDeleteComment = async (item) => {
+        await db.collection("product").doc(itemFirebaseID)
+            .update({
+                comments: firebase.firestore.FieldValue.arrayRemove(item)
+            })
+    }
+    const onDeleteProduct = async (id) => {
+        await db.collection("product")
+            .doc(id)
+            .delete()
+        await setIsRedirect(true)
+    }
+    if (isRedirect) {
+        return <Redirect to="/"/>
+    }
     if (data) {
         return (
             <>
@@ -76,7 +91,10 @@ export const ProductItem = () => {
 
                                 <ListGroup.Item>Weight: {data.weight}</ListGroup.Item>
                             </ListGroup>
-                            <ModalForm data={data} firebaseID={itemFirebaseID}/>
+                            <ModalForm data={data} firebaseID={itemFirebaseID}/>{' '}
+                            <Button variant="danger" onClick={() => onDeleteProduct(itemFirebaseID)}>
+                                Delete
+                            </Button>
                         </Card.Body>
                     </div>
                     <Card.Body>
@@ -109,19 +127,11 @@ export const ProductItem = () => {
                                 <p className='d-inline-block'>
                                     {item.description}
                                 </p>{' '}
-                                <Button variant="secondary" onClick={
-                                    async () => {
-                                        await db.collection("product").doc(itemFirebaseID)
-                                            .update({
-                                                comments: firebase.firestore.FieldValue.arrayRemove(item)
-                                            })
-                                    }
-                                }>
+                                <Button variant="secondary" onClick={() => onDeleteComment(item)}>
                                     Delete
                                 </Button>
                             </ListGroup.Item>;
                         })}
-
                         </ListGroup.Item> : <p>Haven`t some comment. You can be first</p>}
                     </Card.Body>
                 </Card>
